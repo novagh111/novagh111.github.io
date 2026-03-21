@@ -275,6 +275,7 @@
       padding: 10px 0;
       opacity: 0;
       animation: fadeIn 1s ease 1.4s forwards;
+      position: absolute; /* ensure relative for badge */
     }
 
     .ticker-track {
@@ -1098,9 +1099,55 @@
       text-decoration: underline;
     }
 
-    /* ============================================================
-       KEYFRAME ANIMATIONS
-    ============================================================ */
+    /* Live KPDK badge inside ticker */
+    .ticker-station-badge {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 18px;
+      background: linear-gradient(to right, var(--bg) 70%, transparent 100%);
+      z-index: 2;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      flex-shrink: 0;
+      transition: background 0.4s ease;
+    }
+
+    .badge-dot.live {
+      background: #4caf7d;
+      box-shadow: 0 0 6px rgba(76,175,125,0.7);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    .badge-dot.error {
+      background: #c84a4a;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    /* Push ticker text right of badge */
+    .ticker-track {
+      padding-left: 160px;
+    }
     @keyframes fadeUp {
       to {
         opacity: 1;
@@ -1183,10 +1230,14 @@
     <h1 class="hero-title">Above the<br /><span class="accent-word">Weather</span></h1>
     <p class="hero-tagline">Limited edition prints — captured at altitude</p>
 
-    <!-- Instrument ticker -->
+    <!-- Instrument ticker — live KPDK METAR -->
     <div class="ticker-wrapper">
+      <div class="ticker-station-badge" id="ticker-badge">
+        <span class="badge-dot" id="badge-dot"></span>
+        <span id="badge-label">KPDK · LOADING</span>
+      </div>
       <div class="ticker-track" id="ticker-track">
-        <!-- Populated by JS -->
+        <!-- Populated by live METAR fetch -->
       </div>
     </div>
 
@@ -1252,7 +1303,7 @@
       </div>
       <div class="contact-cell">
         <p class="contact-cell-label">Email</p>
-        <p class="contact-cell-value">prints@altimeter.studio</p>
+        <p class="contact-cell-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="daaaa8b3b4aea99abbb6aeb3b7bfaebfa8f4a9aeafbeb3b5">[email&#160;protected]</a></p>
       </div>
       <div class="contact-cell">
         <p class="contact-cell-label">Response time</p>
@@ -1376,7 +1427,7 @@
   <!-- ============================================================
        JAVASCRIPT
   ============================================================ -->
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     'use strict';
 
     /* ==========================================================
@@ -1514,32 +1565,144 @@
     })();
 
     /* ==========================================================
-       INSTRUMENT TICKER — Hero
+       LIVE KPDK METAR TICKER
+       Source: aviationweather.gov free public API — no key needed.
+       Refreshes every 5 minutes. Falls back to placeholder data
+       if the fetch fails (e.g. offline or CORS issue).
     ========================================================== */
-    function buildTicker() {
-      const items = [
-        { label: 'ALT',  val: '41,000 FT' },
-        { label: 'IAS',  val: '482 KTS'   },
-        { label: 'HDG',  val: '274°'      },
-        { label: 'VS',   val: '+1,800 FPM'},
-        { label: 'OAT',  val: '−56°C'     },
-        { label: 'TAT',  val: '−38°C'     },
-        { label: 'GS',   val: '531 KTS'   },
-        { label: 'WIND', val: '270 / 65'  },
-        { label: 'QNH',  val: '1013 HPA'  },
-        { label: 'MACH', val: '0.84'      },
-        { label: 'FUEL', val: '42,800 KG' },
-        { label: 'ETA',  val: '+06:14'    },
-      ];
 
+    const METAR_URL = 'https://aviationweather.gov/api/data/metar?ids=KPDK&format=json&taf=false';
+    const REFRESH_MS = 5 * 60 * 1000; // 5 minutes
+
+    /* Render ticker items into the scrolling track */
+    function renderTicker(items, isLive) {
+      const track = $('#ticker-track');
+      const dot   = $('#badge-dot');
+      const label = $('#badge-label');
+
+      // Double the items so the CSS loop animation is seamless
       const html = [...items, ...items].map(it =>
-        `<span class="ticker-item">${it.label} <span class="ticker-sep">·</span> <span class="val">${it.val}</span></span>`
+        `<span class="ticker-item">${it.label}<span class="ticker-sep"> · </span><span class="val">${it.val}</span></span>`
       ).join('');
 
-      $('#ticker-track').innerHTML = html;
+      track.innerHTML = html;
+
+      if (isLive) {
+        dot.className  = 'badge-dot live';
+        label.textContent = 'KPDK · LIVE METAR';
+      } else {
+        dot.className  = 'badge-dot error';
+        label.textContent = 'KPDK · OFFLINE';
+      }
     }
 
-    buildTicker();
+    /* Parse the decoded METAR JSON from aviationweather.gov */
+    function parseMETAR(data) {
+      const m = data[0];
+      if (!m) return null;
+
+      const items = [];
+
+      // Station & observation time
+      const obsTime = m.obsTime
+        ? new Date(m.obsTime * 1000).toISOString().slice(11, 16) + 'Z'
+        : '—';
+      items.push({ label: 'KPDK OBS', val: obsTime });
+
+      // Wind direction & speed
+      if (m.wdir !== undefined && m.wspd !== undefined) {
+        const dir  = m.wdir === 0 && m.wspd === 0 ? 'CALM'
+                   : String(m.wdir).padStart(3, '0') + '°';
+        const spd  = m.wdir === 0 && m.wspd === 0 ? ''
+                   : ` / ${m.wspd} KT`;
+        const gust = m.wgst ? ` G${m.wgst}` : '';
+        items.push({ label: 'WIND', val: dir + spd + gust });
+      }
+
+      // Visibility
+      if (m.visib !== undefined) {
+        const vis = m.visib >= 10 ? '10+ SM' : `${m.visib} SM`;
+        items.push({ label: 'VIS', val: vis });
+      }
+
+      // Flight category (VFR / MVFR / IFR / LIFR)
+      if (m.flightCategory) {
+        items.push({ label: 'CAT', val: m.flightCategory });
+      }
+
+      // Sky conditions / ceiling
+      if (m.clouds && m.clouds.length > 0) {
+        const sky = m.clouds.map(c => {
+          const cov = c.cover || '';
+          const alt = c.base !== undefined ? `${c.base.toLocaleString()} FT` : '';
+          return cov + (alt ? ' ' + alt : '');
+        }).join(' · ');
+        items.push({ label: 'SKY', val: sky || 'CLEAR' });
+      } else {
+        items.push({ label: 'SKY', val: 'CLEAR' });
+      }
+
+      // Temperature / dewpoint
+      if (m.temp !== undefined && m.dewp !== undefined) {
+        items.push({ label: 'TEMP / DP', val: `${m.temp}°C / ${m.dewp}°C` });
+      }
+
+      // Altimeter setting
+      if (m.altim !== undefined) {
+        // aviationweather returns hPa; convert to inHg
+        const inHg = (m.altim / 33.8639).toFixed(2);
+        items.push({ label: 'ALTM', val: `${inHg} inHg` });
+      }
+
+      // Density altitude estimate (rough: pressure alt + temp correction)
+      if (m.altim !== undefined && m.temp !== undefined) {
+        const pressureAlt = (29.92 - (m.altim / 33.8639)) * 1000 + 1073; // KPDK elev ~1073 ft
+        const densityAlt  = Math.round(pressureAlt + 120 * (m.temp - 15));
+        items.push({ label: 'DENSITY ALT', val: `${densityAlt.toLocaleString()} FT` });
+      }
+
+      // Raw METAR string (split into chunks so it fits readably)
+      if (m.rawOb) {
+        items.push({ label: 'RAW', val: m.rawOb });
+      }
+
+      return items;
+    }
+
+    /* Fallback placeholder when API is unavailable */
+    function fallbackTicker() {
+      renderTicker([
+        { label: 'KPDK', val: 'DATA UNAVAILABLE' },
+        { label: 'WIND', val: '—' },
+        { label: 'VIS',  val: '—' },
+        { label: 'ALTM', val: '—' },
+        { label: 'TEMP', val: '—' },
+        { label: 'SKY',  val: '—' },
+      ], false);
+    }
+
+    /* Fetch live METAR and build ticker */
+    async function fetchMETAR() {
+      try {
+        const res = await fetch(METAR_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        if (!data || !data.length) throw new Error('No data');
+
+        const items = parseMETAR(data);
+        if (!items || !items.length) throw new Error('Parse failed');
+
+        renderTicker(items, true);
+      } catch (err) {
+        console.warn('METAR fetch failed:', err.message);
+        fallbackTicker();
+      }
+    }
+
+    /* Init — fetch immediately, then every 5 min */
+    fetchMETAR();
+    setInterval(fetchMETAR, REFRESH_MS);
 
     /* ==========================================================
        CANVAS IMAGE RENDERER
@@ -1876,11 +2039,4 @@
       sections.forEach(id => {
         const el  = document.getElementById(id);
         const link = $(`nav a[href="#${id}"]`);
-        if (!el || !link) return;
-        const inView = scrollY >= el.offsetTop && scrollY < el.offsetTop + el.offsetHeight;
-        link.style.color = inView ? 'var(--accent)' : '';
-      });
-    }, { passive: true });
-  </script>
-</body>
-</html>
+        if (!el
