@@ -3,578 +3,628 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gallery</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<title>Aviation Systems — Study Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0c0f;
+  --surface: #111318;
+  --surface2: #181c23;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f0f2f5;
+  --muted: #6b7280;
+  --accent: #3b82f6;
+  --accent2: #60a5fa;
+  --green: #10b981;
+  --red: #ef4444;
+  --amber: #f59e0b;
+  --teal: #14b8a6;
+  --purple: #8b5cf6;
+  --coral: #f97316;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden}
+::selection{background:rgba(59,130,246,0.3)}
 
-  :root {
-    --cream: #f5f2ec;
-    --ink: #1a1814;
-    --muted: #8a857c;
-    --accent: #c8a96e;
-    --border: rgba(26,24,20,0.12);
-  }
+/* HERO */
+.hero{padding:60px 40px 40px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59,130,246,0.12) 0%, transparent 70%);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);border-radius:100px;padding:6px 14px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--accent2);letter-spacing:0.08em;margin-bottom:20px}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+h1{font-size:clamp(36px,6vw,64px);font-weight:800;letter-spacing:-0.03em;line-height:1.05;margin-bottom:12px}
+h1 span{background:linear-gradient(135deg,var(--accent2) 0%,var(--teal) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{color:var(--muted);font-size:15px;font-weight:400;margin-bottom:40px;font-family:'JetBrains Mono',monospace}
 
-  html { scroll-behavior: smooth; }
+/* NAV */
+.nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 24px;margin-bottom:48px}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;letter-spacing:0.01em}
+.nav-btn:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
+.nav-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 20px rgba(59,130,246,0.35)}
+.nav-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 
-  body {
-    background: var(--cream);
-    color: var(--ink);
-    font-family: 'Jost', sans-serif;
-    font-weight: 300;
-    min-height: 100vh;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
-  }
+/* MAIN LAYOUT */
+.main{max-width:1100px;margin:0 auto;padding:0 24px 80px}
 
-  /* ── Header ── */
-  header {
-    padding: 3.5rem 2rem 2rem;
-    text-align: center;
-    border-bottom: 0.5px solid var(--border);
-    margin-bottom: 3rem;
-  }
+/* SYSTEM PANEL */
+.panel{display:none;animation:fadeUp 0.35s ease forwards}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-  .site-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-size: clamp(2.2rem, 5vw, 3.8rem);
-    letter-spacing: 0.12em;
-    line-height: 1;
-  }
+.panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+.panel-title{font-size:32px;font-weight:800;letter-spacing:-0.02em}
+.panel-title small{display:block;font-size:12px;font-weight:400;font-family:'JetBrains Mono',monospace;color:var(--muted);letter-spacing:0.06em;margin-bottom:4px}
+.mode-toggle{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px}
+.mode-btn{padding:8px 16px;border-radius:7px;border:none;background:none;color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.18s}
+.mode-btn.active{background:var(--surface2);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.3)}
 
-  .site-name em {
-    font-style: italic;
-    color: var(--accent);
-  }
+/* GRID */
+.content-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:700px){.content-grid{grid-template-columns:1fr}}
 
-  .tagline {
-    margin-top: 0.6rem;
-    font-size: 0.78rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;transition:border-color 0.2s}
+.card:hover{border-color:var(--border2)}
+.card-title{font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;margin-bottom:16px}
+.card-full{grid-column:1/-1}
 
-  /* ── Filter tabs ── */
-  .filters {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    padding: 0 1rem 2.5rem;
-  }
+/* DIAGRAM SVG */
+.diagram-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;grid-column:1/-1}
+.diagram-card svg{width:100%;max-height:380px;display:block}
 
-  .filter-btn {
-    background: none;
-    border: 0.5px solid var(--border);
-    color: var(--muted);
-    font-family: 'Jost', sans-serif;
-    font-weight: 300;
-    font-size: 0.72rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 0.45rem 1.2rem;
-    cursor: pointer;
-    transition: all 0.25s;
-    border-radius: 0;
-  }
+/* FACTS */
+.fact-row{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;align-items:baseline}
+.fact-row:last-child{border:none}
+.fact-key{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);min-width:140px;flex-shrink:0}
+.fact-val{color:var(--text);line-height:1.5}
 
-  .filter-btn:hover, .filter-btn.active {
-    background: var(--ink);
-    color: var(--cream);
-    border-color: var(--ink);
-  }
+/* QUIZ */
+.quiz-wrap{display:none}
+.quiz-wrap.active{display:block;animation:fadeUp 0.3s ease forwards}
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.q-counter{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+.progress-bar{height:3px;background:var(--surface2);border-radius:2px;margin-bottom:24px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--teal));border-radius:2px;transition:width 0.4s ease}
+.q-text{font-size:20px;font-weight:600;letter-spacing:-0.01em;line-height:1.4;margin-bottom:24px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+@media(max-width:600px){.options{grid-template-columns:1fr}}
+.opt{padding:14px 16px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:'Syne',sans-serif;font-size:14px;font-weight:500;cursor:pointer;text-align:left;transition:all 0.18s;display:flex;align-items:center;gap:10px}
+.opt::before{content:attr(data-letter);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);min-width:16px}
+.opt:hover:not(:disabled){border-color:var(--accent);color:var(--text);background:rgba(59,130,246,0.08)}
+.opt.correct{border-color:var(--green)!important;background:rgba(16,185,129,0.1)!important;color:var(--green)!important}
+.opt.wrong{border-color:var(--red)!important;background:rgba(239,68,68,0.1)!important;color:var(--red)!important}
+.opt:disabled{cursor:not-allowed;opacity:0.7}
+.feedback{font-size:14px;min-height:24px;margin-bottom:16px;font-family:'JetBrains Mono',monospace}
+.next-btn{padding:12px 24px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.18s;display:none}
+.next-btn:hover{background:var(--accent2);border-color:var(--accent2)}
 
-  /* ── Masonry grid ── */
-  .gallery-grid {
-    columns: 3 280px;
-    column-gap: 1.25rem;
-    padding: 0 2rem 4rem;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
+/* SCORE SCREEN */
+.score-screen{text-align:center;padding:48px 24px;animation:fadeUp 0.4s ease}
+.score-num{font-size:72px;font-weight:800;letter-spacing:-0.04em;line-height:1}
+.score-label{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:13px;margin:8px 0 24px}
+.score-msg{font-size:18px;font-weight:600;margin-bottom:32px}
+.score-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.score-actions button{padding:11px 22px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:'Syne',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.18s}
+.score-actions button:hover{border-color:var(--accent);color:var(--accent)}
+.score-actions button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.score-actions button.primary:hover{background:var(--accent2)}
 
-  .photo-card {
-    break-inside: avoid;
-    margin-bottom: 1.25rem;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    background: #e8e4dc;
-  }
+/* TAGS */
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.tag{padding:3px 10px;border-radius:100px;font-size:11px;font-family:'JetBrains Mono',monospace;border:1px solid}
 
-  /* Transparent shield — sits over image, blocks right-click/drag */
-  .photo-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 10;
-    -webkit-touch-callout: none;
-  }
+/* COLORS PER SYSTEM */
+[data-system="fuel"] .accent-color{color:#3b82f6}
+[data-system="ignition"] .accent-color{color:#f97316}
+[data-system="hydraulic"] .accent-color{color:#10b981}
+[data-system="pitot"] .accent-color{color:#8b5cf6}
+[data-system="carb"] .accent-color{color:#14b8a6}
+[data-system="electrical"] .accent-color{color:#f59e0b}
 
-  .photo-card img {
-    display: block;
-    width: 100%;
-    height: auto;
-    transition: transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.55s;
-    pointer-events: none;
-    -webkit-user-drag: none;
-    -khtml-user-drag: none;
-    -moz-user-drag: none;
-    user-drag: none;
-    draggable: false;
-  }
+/* SCORE RING */
+.ring-wrap{position:relative;width:120px;height:120px;margin:0 auto 16px}
+.ring-wrap svg{transform:rotate(-90deg)}
+circle.ring-track{fill:none;stroke:var(--surface2);stroke-width:8}
+circle.ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 0.8s ease;stroke:var(--accent)}
 
-  .photo-card:hover img {
-    transform: scale(1.04);
-    filter: brightness(0.88);
-  }
-
-  .photo-card .caption {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 2rem 1rem 0.9rem;
-    background: linear-gradient(transparent, rgba(15,12,8,0.65));
-    color: #f5f2ec;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 0.95rem;
-    letter-spacing: 0.04em;
-    opacity: 0;
-    transform: translateY(6px);
-    transition: opacity 0.3s, transform 0.3s;
-    pointer-events: none;
-    z-index: 11;
-  }
-
-  .photo-card:hover .caption {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* ── Lightbox ── */
-  #lightbox {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    background: rgba(10,8,6,0.94);
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
-    -webkit-user-select: none;
-    user-select: none;
-  }
-
-  #lightbox.open { display: flex; }
-
-  .lb-inner {
-    position: relative;
-    max-width: min(90vw, 1000px);
-    max-height: 90vh;
-  }
-
-  #lb-img {
-    display: block;
-    max-width: 100%;
-    max-height: 82vh;
-    object-fit: contain;
-    pointer-events: none;
-    -webkit-user-drag: none;
-    user-drag: none;
-  }
-
-  /* Another invisible shield over lightbox image */
-  .lb-shield {
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    -webkit-touch-callout: none;
-  }
-
-  .lb-caption {
-    margin-top: 0.85rem;
-    text-align: center;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    color: rgba(245,242,236,0.65);
-    font-size: 1rem;
-    letter-spacing: 0.05em;
-  }
-
-  .lb-close {
-    position: fixed;
-    top: 1.4rem;
-    right: 1.8rem;
-    background: none;
-    border: none;
-    color: rgba(245,242,236,0.55);
-    font-size: 1.8rem;
-    cursor: pointer;
-    line-height: 1;
-    transition: color 0.2s;
-    z-index: 20;
-    font-family: 'Jost', sans-serif;
-    font-weight: 300;
-  }
-
-  .lb-close:hover { color: var(--cream); }
-
-  .lb-nav {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: 0.5px solid rgba(245,242,236,0.2);
-    color: rgba(245,242,236,0.5);
-    font-size: 1.2rem;
-    width: 46px;
-    height: 46px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    z-index: 20;
-  }
-
-  .lb-nav:hover { color: var(--cream); border-color: rgba(245,242,236,0.6); }
-  .lb-prev { left: 1.2rem; }
-  .lb-next { right: 1.2rem; }
-
-  .lb-counter {
-    position: fixed;
-    bottom: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    color: rgba(245,242,236,0.35);
-    text-transform: uppercase;
-  }
-
-  /* ── "Protected" notice ── */
-  .protect-notice {
-    text-align: center;
-    padding: 0 2rem 2rem;
-    font-size: 0.68rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
-    opacity: 0.5;
-  }
-
-  /* ── Footer ── */
-  footer {
-    border-top: 0.5px solid var(--border);
-    padding: 1.8rem 2rem;
-    text-align: center;
-    font-size: 0.72rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  /* ── Watermark on lightbox ── */
-  .lb-watermark {
-    position: absolute;
-    bottom: 44px;
-    right: 12px;
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: rgba(245,242,236,0.22);
-    font-family: 'Jost', sans-serif;
-    pointer-events: none;
-    z-index: 6;
-  }
-
-  /* ── Hidden class ── */
-  .photo-card.hidden { display: none; }
-
-  /* ── Loading shimmer ── */
-  .photo-card .shimmer {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, #e8e4dc 25%, #f0ece4 50%, #e8e4dc 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
-    z-index: 1;
-  }
-
-  @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-
-  .photo-card img.loaded + .shimmer,
-  .photo-card img.loaded ~ .shimmer { display: none; }
-
-  @media (max-width: 600px) {
-    .gallery-grid { columns: 2 140px; padding: 0 1rem 3rem; }
-    header { padding: 2.5rem 1rem 1.5rem; }
-  }
 </style>
 </head>
 <body>
 
-<header>
-  <h1 class="site-name">my <em>gallery</em></h1>
-  <p class="tagline">a personal collection</p>
-</header>
-
-<nav class="filters" aria-label="Filter by category">
-  <button class="filter-btn active" data-filter="all">All</button>
-  <button class="filter-btn" data-filter="nature">Nature</button>
-  <button class="filter-btn" data-filter="portrait">Portrait</button>
-  <button class="filter-btn" data-filter="urban">Urban</button>
-  <button class="filter-btn" data-filter="travel">Travel</button>
-</nav>
-
-<main class="gallery-grid" id="gallery">
-
-  <!--
-    ════════════════════════════════════════════════════════════
-    HOW TO ADD YOUR PHOTOS:
-
-    1. Put your images in the same folder as this index.html
-       (or a subfolder like "photos/")
-
-    2. Copy a photo-card block below and update:
-       - src=""         → your image filename  e.g. src="photos/sunset.jpg"
-       - data-category  → one of: nature, portrait, urban, travel
-       - data-caption   → text shown on hover & in lightbox
-       - alt=""         → describe the photo (for accessibility)
-
-    3. Use COMPRESSED images (aim for 800–1200px wide, <300 KB each).
-       Full-res images are NOT protected by code alone — serve only
-       web-optimised versions. See INSTRUCTIONS.txt for more detail.
-
-    EXAMPLE CARDS ARE BELOW — replace the placeholder images with your own.
-    ════════════════════════════════════════════════════════════
-  -->
-
-  <div class="photo-card" data-category="nature" data-caption="Golden hour, somewhere quiet">
-    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=60" alt="Mountain at golden hour" draggable="false">
-    <div class="shimmer"></div>
-    <div class="caption">Golden hour, somewhere quiet</div>
-  </div>
-
-  <div class="photo-card" data-category="portrait" data-caption="Light through the curtain">
-    <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=60" alt="Portrait with soft window light" draggable="false">
-    <div class="shimmer"></div>
-    <div class="caption">Light through the curtain</div>
-  </div>
-
-  <div class="photo-card" data-category="urban" data-caption="Empty streets, early morning">
-    <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=60" alt="City skyline at dawn" draggable="false">
-    <div class="shimmer"></div>
-    <div class="caption">Empty streets, early morning</div>
-  </div>
-
-  <div class="photo-card" data-category="travel" data-caption="Blue hour over the old town">
-    <img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=800&q=60" alt="European old town at blue hour" draggable="false">
-    <div class="shimmer"></div>
-    <div class="caption">Blue hour over the old town</div>
-  </div>
-
-  <div class="photo-card" data-category="nature" data-caption="Fog lifting off the valley">
-    <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=60" alt="Foggy forest valley" draggable="false">
-    <div class="shimmer"></div>
-    <div class="caption">Fog lifting off the valley</div>
-  </div>
-
-  <div class="photo-card" data-category="urban" data-caption="Neon rain">
-    <img src="https://images.unsplash.com/photo-1518235506717-e1ed3306a89b?w=800&q=60" alt="Rainy city street at night with neon lights" draggable="false">
-    <div class="shimmer"></div>
-    <div class="caption">Neon rain</div>
-  </div>
-
-  <div class="photo-card" data-category="travel" data-caption="Somewhere the sea is very blue">
-    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=60" alt="Turquoise ocean and sandy beach" draggable="false">
-    <div class="shimmer"></div>
-    <div class="caption">Somewhere the sea is very blue</div>
-  </div>
-
-  <div class="photo-card" data-category="portrait" data-caption="Thinking, not posing">
-    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&q=60" alt="Candid portrait of a man" draggable="false">
-    <div class="shimmer"></div>
-    <div class="caption">Thinking, not posing</div>
-  </div>
-
-  <div class="photo-card" data-category="nature" data-caption="Just before the storm">
-    <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=60" alt="Stormy dramatic landscape" draggable="false">
-    <div class="shimmer"></div>
-    <div class="caption">Just before the storm</div>
-  </div>
-
-</main>
-
-<p class="protect-notice">© All images are protected. Reproduction prohibited.</p>
-
-<footer>
-  <span>made with care &nbsp;·&nbsp; all rights reserved</span>
-</footer>
-
-<!-- Lightbox -->
-<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
-  <button class="lb-close" id="lb-close" aria-label="Close">&#215;</button>
-  <button class="lb-nav lb-prev" id="lb-prev" aria-label="Previous photo">&#8592;</button>
-  <button class="lb-nav lb-next" id="lb-next" aria-label="Next photo">&#8594;</button>
-  <div class="lb-inner">
-    <img id="lb-img" src="" alt="" draggable="false">
-    <div class="lb-shield"></div>
-    <div class="lb-watermark" id="lb-watermark">© my gallery</div>
-    <p class="lb-caption" id="lb-caption"></p>
-  </div>
-  <div class="lb-counter" id="lb-counter"></div>
+<div class="hero">
+  <div class="badge">PPL Study Tool</div>
+  <h1>Aviation <span>Systems</span></h1>
+  <p class="hero-sub">// diagrams · key facts · interactive quiz</p>
 </div>
 
+<div class="nav" id="mainNav"></div>
+<div class="main" id="mainContent"></div>
+
 <script>
-(function () {
-  'use strict';
-
-  /* ── Image load shimmer removal ── */
-  document.querySelectorAll('.photo-card img').forEach(img => {
-    if (img.complete) img.classList.add('loaded');
-    else img.addEventListener('load', () => img.classList.add('loaded'));
-  });
-
-  /* ── Disable right-click everywhere ── */
-  document.addEventListener('contextmenu', e => e.preventDefault());
-
-  /* ── Disable drag on all images ── */
-  document.addEventListener('dragstart', e => {
-    if (e.target.tagName === 'IMG') e.preventDefault();
-  });
-
-  /* ── Block common screenshot/save keyboard shortcuts ── */
-  document.addEventListener('keydown', e => {
-    const blocked =
-      (e.ctrlKey && ['s','S','u','U','p','P'].includes(e.key)) ||
-      (e.metaKey && ['s','S','u','U','p','P'].includes(e.key)) ||
-      e.key === 'PrintScreen' ||
-      (e.ctrlKey && e.shiftKey && ['i','I','j','J','c','C'].includes(e.key)) ||
-      (e.metaKey && e.altKey && ['i','I','j','J'].includes(e.key));
-    if (blocked) e.preventDefault();
-  });
-
-  /* ── Disable touch long-press context menu on iOS ── */
-  document.addEventListener('touchstart', e => {
-    if (e.target.tagName === 'IMG') e.preventDefault();
-  }, { passive: false });
-
-  /* ── Disable text/image selection ── */
-  document.addEventListener('selectstart', e => e.preventDefault());
-
-  /* ── Filter ── */
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const cards = document.querySelectorAll('.photo-card');
-
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const f = btn.dataset.filter;
-      cards.forEach(c => {
-        c.classList.toggle('hidden', f !== 'all' && c.dataset.category !== f);
-      });
-    });
-  });
-
-  /* ── Lightbox ── */
-  const lightbox = document.getElementById('lightbox');
-  const lbImg    = document.getElementById('lb-img');
-  const lbCap    = document.getElementById('lb-caption');
-  const lbCount  = document.getElementById('lb-counter');
-  const lbClose  = document.getElementById('lb-close');
-  const lbPrev   = document.getElementById('lb-prev');
-  const lbNext   = document.getElementById('lb-next');
-
-  let currentIndex = 0;
-  let visibleCards = [];
-
-  function getVisible() {
-    return [...document.querySelectorAll('.photo-card:not(.hidden)')];
+const systems = [
+  {
+    id:'fuel', name:'Fuel System', color:'#3b82f6', dotColor:'#3b82f6',
+    facts:[
+      ['Left Tank','25 gal total · 24 gal usable · 17 gal tabs'],
+      ['Right Tank','25 gal total · 24 gal usable · 17 gal tabs'],
+      ['Fuel Selector','3-in-1: Primer, Strainer, Sump'],
+      ['Pump 1','Engine-driven fuel pump (top)'],
+      ['Pump 2','Electrically-driven fuel pump (bottom)'],
+      ['Flow path','Tanks → Selector → Electric pump → Engine pump → Engine'],
+      ['Tip','Each tank: 25 total, 24 usable, 17 to tabs'],
+    ],
+    tags:['25 gal each','24 usable','17 tabs','3-in-1 selector'],
+    diagram:`<svg viewBox="0 0 500 360" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="rgba(255,255,255,0.4)"/></marker></defs>
+      <text x="250" y="28" text-anchor="middle" font-family="Syne" font-size="18" font-weight="700" fill="#60a5fa">Fuel System</text>
+      <rect x="165" y="45" width="170" height="55" rx="8" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="250" y="68" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#93c5fd">ENGINE-DRIVEN</text>
+      <text x="250" y="85" text-anchor="middle" font-family="Syne" font-size="13" font-weight="600" fill="#dbeafe">Fuel Pump</text>
+      <rect x="165" y="118" width="170" height="55" rx="8" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="250" y="141" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#93c5fd">ELECTRICALLY-DRIVEN</text>
+      <text x="250" y="158" text-anchor="middle" font-family="Syne" font-size="13" font-weight="600" fill="#dbeafe">Fuel Pump</text>
+      <line x1="250" y1="100" x2="250" y2="118" stroke="rgba(255,255,255,0.3)" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="207" y="190" width="86" height="52" rx="8" fill="#1e40af" stroke="#3b82f6" stroke-width="2"/>
+      <text x="250" y="213" text-anchor="middle" font-family="Syne" font-size="12" font-weight="700" fill="#dbeafe">Fuel</text>
+      <text x="250" y="229" text-anchor="middle" font-family="Syne" font-size="12" font-weight="700" fill="#dbeafe">Selector</text>
+      <text x="250" y="258" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#64748b">3-in-1</text>
+      <line x1="250" y1="173" x2="250" y2="190" stroke="rgba(255,255,255,0.3)" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="20" y="200" width="155" height="85" rx="8" fill="#0f2a1a" stroke="#10b981" stroke-width="1.5"/>
+      <text x="98" y="222" text-anchor="middle" font-family="Syne" font-size="13" font-weight="700" fill="#6ee7b7">Left Tank</text>
+      <text x="98" y="240" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#34d399">25 gal total</text>
+      <text x="98" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#34d399">24 gal usable</text>
+      <text x="98" y="272" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#059669">17 gal tabs</text>
+      <rect x="325" y="200" width="155" height="85" rx="8" fill="#0f2a1a" stroke="#10b981" stroke-width="1.5"/>
+      <text x="403" y="222" text-anchor="middle" font-family="Syne" font-size="13" font-weight="700" fill="#6ee7b7">Right Tank</text>
+      <text x="403" y="240" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#34d399">25 gal total</text>
+      <text x="403" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#34d399">24 gal usable</text>
+      <text x="403" y="272" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#059669">17 gal tabs</text>
+      <line x1="175" y1="242" x2="207" y2="220" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="325" y1="220" x2="293" y2="220" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="250" y="310" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#475569">Primer · Strainer · Sump</text>
+      <text x="250" y="330" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#334155">selector is 3-in-1</text>
+    </svg>`,
+    questions:[
+      {q:'How many total gallons does each wing tank hold?',a:'25 gallons',opts:['17 gallons','24 gallons','25 gallons','50 gallons']},
+      {q:'How many gallons are usable per tank?',a:'24 gallons',opts:['17 gallons','24 gallons','25 gallons','22 gallons']},
+      {q:'At what fuel level are the tabs (tab markers)?',a:'17 gallons',opts:['10 gallons','17 gallons','20 gallons','24 gallons']},
+      {q:'The fuel selector is also called a ___?',a:'3-in-1',opts:['Dual valve','3-in-1','Crossfeed valve','Bypass valve']},
+      {q:'Which pump is at the TOP of the fuel flow?',a:'Engine-driven pump',opts:['Electric boost pump','Engine-driven pump','Primer pump','Selector pump']},
+      {q:'The 3-in-1 selector includes Primer, Strainer, and ___?',a:'Sump',opts:['Sump','Drain','Vent','Filter']},
+    ]
+  },
+  {
+    id:'ignition', name:'Ignition System', color:'#f97316', dotColor:'#f97316',
+    facts:[
+      ['Left mag','Independent magneto; fires spark plugs via high-voltage wires'],
+      ['Right mag','Independent magneto; fires spark plugs via high-voltage wires'],
+      ['P-leads','Ground the mag to STOP it from firing (key to OFF)'],
+      ['Danger','Cut p-lead = mag fires = propeller can move unexpectedly'],
+      ['Power source','Self-powered — completely independent of the electrical system'],
+      ['Crankshaft','Drives magnetos + propeller via flywheel'],
+    ],
+    tags:['self-powered','2 mags','p-leads ground','dual ignition'],
+    diagram:`<svg viewBox="0 0 500 320" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="arr2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="rgba(249,115,22,0.7)"/></marker></defs>
+      <text x="250" y="28" text-anchor="middle" font-family="Syne" font-size="18" font-weight="700" fill="#fb923c">Ignition System</text>
+      <ellipse cx="95" cy="130" rx="48" ry="36" fill="#1c1007" stroke="#f97316" stroke-width="2"/>
+      <text x="95" y="126" text-anchor="middle" font-family="Syne" font-size="13" font-weight="700" fill="#fdba74">Left</text>
+      <text x="95" y="142" text-anchor="middle" font-family="Syne" font-size="13" font-weight="700" fill="#fdba74">Mag</text>
+      <ellipse cx="95" cy="210" rx="48" ry="36" fill="#1c1007" stroke="#fb923c" stroke-width="2"/>
+      <text x="95" y="206" text-anchor="middle" font-family="Syne" font-size="13" font-weight="700" fill="#fdba74">Right</text>
+      <text x="95" y="222" text-anchor="middle" font-family="Syne" font-size="13" font-weight="700" fill="#fdba74">Mag</text>
+      <rect x="155" y="110" width="70" height="40" rx="6" fill="#1a1510" stroke="#78350f" stroke-width="1.2"/>
+      <text x="190" y="134" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#d97706">Accessory</text>
+      <text x="190" y="146" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#d97706">case</text>
+      <rect x="235" y="120" width="140" height="30" rx="6" fill="#1c1007" stroke="#f97316" stroke-width="2"/>
+      <text x="305" y="140" text-anchor="middle" font-family="Syne" font-size="13" font-weight="600" fill="#fdba74">Crankshaft</text>
+      <rect x="235" y="175" width="140" height="60" rx="6" fill="#0f1a0f" stroke="#f97316" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <text x="305" y="198" text-anchor="middle" font-family="Syne" font-size="12" font-weight="600" fill="#fdba74">Cylinders</text>
+      <text x="305" y="214" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#78350f">spark plugs</text>
+      <text x="305" y="227" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#78350f">fire here</text>
+      <ellipse cx="400" cy="155" rx="22" ry="44" fill="#1a1a1a" stroke="#52525b" stroke-width="1.5"/>
+      <text x="400" y="160" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#71717a">fly-</text>
+      <text x="400" y="171" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#71717a">wheel</text>
+      <ellipse cx="455" cy="155" rx="26" ry="56" fill="none" stroke="#52525b" stroke-width="2"/>
+      <line x1="455" y1="99" x2="440" y2="115" stroke="#71717a" stroke-width="2.5"/>
+      <line x1="455" y1="211" x2="440" y2="195" stroke="#71717a" stroke-width="2.5"/>
+      <text x="487" y="162" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#52525b" writing-mode="tb">propeller</text>
+      <path d="M95,94 Q160,55 235,130" fill="none" stroke="#f97316" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+      <path d="M95,100 Q170,70 235,150" fill="none" stroke="#f97316" stroke-width="1.3" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+      <path d="M95,176 Q160,230 235,195" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+      <path d="M95,182 Q170,245 235,205" fill="none" stroke="#fb923c" stroke-width="1.3" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+      <line x1="30" y1="95" x2="50" y2="118" stroke="#3b82f6" stroke-width="1.5"/>
+      <line x1="30" y1="95" x2="50" y2="200" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="28" y="90" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#60a5fa">p-leads</text>
+      <text x="250" y="300" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#44403c">Mags are self-powered — no battery needed</text>
+    </svg>`,
+    questions:[
+      {q:'What do p-leads do when the key is turned to OFF?',a:'Ground the mag to stop it firing',opts:['Power the magneto','Ground the mag to stop it firing','Connect mags to battery','Send spark to plugs directly']},
+      {q:'The ignition system is powered by what source?',a:'Self-powered (no electrical)',opts:['Battery only','Alternator only','Both battery & alternator','Self-powered (no electrical)']},
+      {q:'How many magnetos does a typical GA aircraft have?',a:'2 (left and right)',opts:['1','2 (left and right)','3','4']},
+      {q:'Spark plugs fire inside the ___?',a:'Cylinders',opts:['Crankcase','Flywheel','Cylinders','Accessory case']},
+      {q:'A cut p-lead means the mag will ___?',a:'Fire continuously (danger)',opts:['Shut off completely','Fire continuously (danger)','Fire only on key-on','Be unaffected']},
+      {q:'The crankshaft connects to the propeller via the ___?',a:'Flywheel',opts:['Starter gear','P-lead','Flywheel','Magneto']},
+    ]
+  },
+  {
+    id:'hydraulic', name:'Hydraulic System', color:'#10b981', dotColor:'#10b981',
+    facts:[
+      ['Function','Operates the wheel brakes only (not retractable gear on this aircraft)'],
+      ['Master cyls','Left (L) and Right (R) — one per rudder/brake pedal'],
+      ['Slave cyls','Left (L) and Right (R) — mounted at each main wheel'],
+      ['Parking brake','Valve in the line between master and slave cylinders'],
+      ['Fluid path','Pedal → Master cyl → Parking valve → Slave cyl → Wheel brake'],
+      ['Tip','Think: master (top) → parking brake (middle) → slave (bottom)'],
+    ],
+    tags:['brakes only','master cyls','parking brake valve','slave cyls'],
+    diagram:`<svg viewBox="0 0 500 340" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="arr3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="rgba(16,185,129,0.7)"/></marker></defs>
+      <text x="250" y="28" text-anchor="middle" font-family="Syne" font-size="18" font-weight="700" fill="#34d399">Hydraulic System</text>
+      <ellipse cx="80" cy="95" rx="50" ry="32" fill="#0d2a1e" stroke="#10b981" stroke-width="1.8"/>
+      <text x="80" y="90" text-anchor="middle" font-family="Syne" font-size="12" font-weight="600" fill="#6ee7b7">Nose</text>
+      <text x="80" y="105" text-anchor="middle" font-family="Syne" font-size="12" font-weight="600" fill="#6ee7b7">Wheel</text>
+      <rect x="220" y="55" width="55" height="42" rx="8" fill="#0f2a1a" stroke="#10b981" stroke-width="1.8"/>
+      <text x="247" y="78" text-anchor="middle" font-family="Syne" font-size="22" font-weight="800" fill="#34d399">L</text>
+      <rect x="220" y="107" width="55" height="42" rx="8" fill="#0f2a1a" stroke="#10b981" stroke-width="1.8"/>
+      <text x="247" y="132" text-anchor="middle" font-family="Syne" font-size="22" font-weight="800" fill="#34d399">R</text>
+      <text x="210" y="72" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#059669">Master</text>
+      <text x="210" y="84" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#059669">cylinders</text>
+      <line x1="130" y1="95" x2="220" y2="90" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr3)"/>
+      <line x1="340" y1="76" x2="430" y2="76" stroke="#10b981" stroke-width="1.5"/>
+      <line x1="340" y1="128" x2="430" y2="128" stroke="#10b981" stroke-width="1.5"/>
+      <line x1="430" y1="76" x2="430" y2="175" stroke="#10b981" stroke-width="1.5"/>
+      <line x1="430" y1="128" x2="430" y2="175" stroke="#10b981" stroke-width="1.5" stroke-dasharray="0"/>
+      <rect x="330" y="170" width="110" height="30" rx="8" fill="#0d2a0d" stroke="#10b981" stroke-width="2"/>
+      <text x="385" y="190" text-anchor="middle" font-family="Syne" font-size="12" font-weight="700" fill="#34d399">Parking Brake</text>
+      <line x1="430" y1="200" x2="430" y2="240" stroke="#10b981" stroke-width="1.5"/>
+      <line x1="340" y1="252" x2="430" y2="240" stroke="#10b981" stroke-width="1.5"/>
+      <line x1="340" y1="278" x2="430" y2="280" stroke="#10b981" stroke-width="1.5"/>
+      <line x1="430" y1="240" x2="430" y2="280" stroke="#10b981" stroke-width="1.5"/>
+      <rect x="220" y="238" width="55" height="42" rx="8" fill="#0f2a1a" stroke="#10b981" stroke-width="1.8"/>
+      <text x="247" y="263" text-anchor="middle" font-family="Syne" font-size="22" font-weight="800" fill="#34d399">L</text>
+      <rect x="220" y="288" width="55" height="42" rx="8" fill="#0f2a1a" stroke="#10b981" stroke-width="1.8"/>
+      <text x="247" y="314" text-anchor="middle" font-family="Syne" font-size="22" font-weight="800" fill="#34d399">R</text>
+      <text x="210" y="255" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#059669">Slave</text>
+      <text x="210" y="267" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#059669">cylinders</text>
+      <ellipse cx="80" cy="290" rx="50" ry="32" fill="#0d2a1e" stroke="#10b981" stroke-width="1.8"/>
+      <text x="80" y="285" text-anchor="middle" font-family="Syne" font-size="12" font-weight="600" fill="#6ee7b7">Main</text>
+      <text x="80" y="300" text-anchor="middle" font-family="Syne" font-size="12" font-weight="600" fill="#6ee7b7">Wheels</text>
+      <line x1="130" y1="290" x2="220" y2="275" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr3)"/>
+    </svg>`,
+    questions:[
+      {q:'What does the hydraulic system primarily operate?',a:'Wheel brakes',opts:['Landing gear retraction','Wheel brakes','Flaps','Rudder']},
+      {q:'How many master cylinders are there?',a:'2 (L and R)',opts:['1','2 (L and R)','3','4']},
+      {q:'Where is the parking brake located in the hydraulic flow?',a:'Between master and slave cylinders',opts:['At the master cylinder','Between master and slave cylinders','At the wheel','Before the pedals']},
+      {q:'Slave cylinders are located at the ___?',a:'Wheels',opts:['Pedals','Parking valve','Wheels','Master cylinders']},
+      {q:'What is the correct order of hydraulic flow?',a:'Pedal → Master → Parking → Slave → Wheel',opts:['Pedal → Slave → Master → Wheel','Pedal → Master → Parking → Slave → Wheel','Master → Pedal → Slave → Wheel','Parking → Master → Pedal → Wheel']},
+    ]
+  },
+  {
+    id:'pitot', name:'Pitot-Static', color:'#8b5cf6', dotColor:'#8b5cf6',
+    facts:[
+      ['Pitot tube','Measures ram (impact) air pressure — faces forward into airflow'],
+      ['Static port','Measures static (ambient) air pressure — flush on fuselage'],
+      ['Airspeed Ind.','Uses BOTH pitot AND static pressure'],
+      ['Altimeter','Uses STATIC pressure only'],
+      ['VSI','Uses STATIC pressure only'],
+      ['Attitude Ind.','GYROSCOPIC — not pitot-static'],
+      ['Turn Coordinator','GYROSCOPIC — not pitot-static'],
+      ['Heading Ind.','GYROSCOPIC — not pitot-static'],
+    ],
+    tags:['ASI=pitot+static','Alt=static','VSI=static','AI/TC/HI=gyro'],
+    diagram:`<svg viewBox="0 0 500 310" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="arr4p" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8b5cf6"/></marker>
+      <marker id="arr4s" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#a78bfa"/></marker></defs>
+      <text x="250" y="28" text-anchor="middle" font-family="Syne" font-size="18" font-weight="700" fill="#a78bfa">Pitot-Static System</text>
+      <rect x="20" y="50" width="130" height="45" rx="8" fill="#1e1a3f" stroke="#8b5cf6" stroke-width="2"/>
+      <text x="85" y="70" text-anchor="middle" font-family="Syne" font-size="13" font-weight="700" fill="#c4b5fd">Pitot Tube</text>
+      <text x="85" y="85" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#7c3aed">ram pressure</text>
+      <rect x="20" y="115" width="130" height="45" rx="8" fill="#1e1a3f" stroke="#a78bfa" stroke-width="2"/>
+      <text x="85" y="135" text-anchor="middle" font-family="Syne" font-size="13" font-weight="700" fill="#c4b5fd">Static Port</text>
+      <text x="85" y="150" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#7c3aed">ambient pressure</text>
+      <rect x="330" y="40" width="155" height="48" rx="8" fill="#1e1a3f" stroke="#8b5cf6" stroke-width="1.8"/>
+      <text x="408" y="60" text-anchor="middle" font-family="Syne" font-size="13" font-weight="700" fill="#c4b5fd">Airspeed</text>
+      <text x="408" y="75" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#6d28d9">pitot + static</text>
+      <rect x="330" y="103" width="155" height="42" rx="8" fill="#1e1a3f" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="408" y="122" text-anchor="middle" font-family="Syne" font-size="13" font-weight="700" fill="#c4b5fd">Altimeter</text>
+      <text x="408" y="137" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#6d28d9">static only</text>
+      <rect x="330" y="158" width="155" height="42" rx="8" fill="#1e1a3f" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="408" y="177" text-anchor="middle" font-family="Syne" font-size="13" font-weight="700" fill="#c4b5fd">VSI</text>
+      <text x="408" y="192" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#6d28d9">static only</text>
+      <line x1="150" y1="72" x2="330" y2="64" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arr4p)"/>
+      <line x1="150" y1="137" x2="330" y2="64" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr4p)"/>
+      <line x1="150" y1="137" x2="330" y2="124" stroke="#a78bfa" stroke-width="1.8" marker-end="url(#arr4s)"/>
+      <line x1="150" y1="137" x2="330" y2="179" stroke="#a78bfa" stroke-width="1.8" marker-end="url(#arr4s)"/>
+      <rect x="20" y="220" width="460" height="75" rx="10" fill="#111118" stroke="#3f3f46" stroke-width="1"/>
+      <text x="250" y="241" text-anchor="middle" font-family="Syne" font-size="11" font-weight="600" fill="#71717a">GYROSCOPIC instruments — NOT pitot-static</text>
+      <rect x="35" y="250" width="130" height="30" rx="6" fill="#1c1c24" stroke="#3f3f46" stroke-width="1"/>
+      <text x="100" y="270" text-anchor="middle" font-family="Syne" font-size="11" fill="#52525b">Attitude Indicator</text>
+      <rect x="180" y="250" width="130" height="30" rx="6" fill="#1c1c24" stroke="#3f3f46" stroke-width="1"/>
+      <text x="245" y="270" text-anchor="middle" font-family="Syne" font-size="11" fill="#52525b">Turn Coordinator</text>
+      <rect x="325" y="250" width="140" height="30" rx="6" fill="#1c1c24" stroke="#3f3f46" stroke-width="1"/>
+      <text x="395" y="270" text-anchor="middle" font-family="Syne" font-size="11" fill="#52525b">Heading Indicator</text>
+    </svg>`,
+    questions:[
+      {q:'Which instrument uses BOTH pitot AND static pressure?',a:'Airspeed indicator',opts:['Altimeter','VSI','Airspeed indicator','Turn coordinator']},
+      {q:'The altimeter uses which pressure source?',a:'Static only',opts:['Pitot only','Static only','Pitot + static','Neither']},
+      {q:'Which is NOT a pitot-static instrument?',a:'Attitude indicator',opts:['Altimeter','VSI','Airspeed indicator','Attitude indicator']},
+      {q:'The pitot tube measures what type of pressure?',a:'Ram (impact) air pressure',opts:['Static ambient pressure','Manifold pressure','Ram (impact) air pressure','Differential pressure']},
+      {q:'VSI uses which pressure source?',a:'Static only',opts:['Pitot only','Static only','Both pitot & static','Gyroscope']},
+      {q:'Attitude indicator, Turn Coordinator, and Heading Indicator are all ___?',a:'Gyroscopic instruments',opts:['Pitot-static instruments','Magnetic instruments','Gyroscopic instruments','Electrical instruments']},
+    ]
+  },
+  {
+    id:'carb', name:'Carburetor', color:'#14b8a6', dotColor:'#14b8a6',
+    facts:[
+      ['Venturi','Narrows airflow → pressure drops → draws fuel up from float chamber'],
+      ['Float chamber','Maintains constant fuel level via a float'],
+      ['Throttle plate','Controls airflow volume and thus engine power'],
+      ['Mixture needle','Adjusts the fuel-to-air ratio (rich/lean)'],
+      ['Accelerator pump','Injects extra fuel on sudden throttle advance to prevent stumble'],
+      ['Carb heat','Routes hot cowling air to melt ice in the venturi'],
+      ['Carb ice','Can form in cool/humid conditions even at warm OATs'],
+    ],
+    tags:['venturi drops P','float controls level','carb heat=hot cowl','acc. pump=surge fuel'],
+    diagram:`<svg viewBox="0 0 500 320" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="arr5" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="rgba(20,184,166,0.7)"/></marker></defs>
+      <text x="250" y="26" text-anchor="middle" font-family="Syne" font-size="18" font-weight="700" fill="#2dd4bf">Carburetor</text>
+      <polygon points="50,45 140,65 140,130 50,150" fill="#0d2a27" stroke="#14b8a6" stroke-width="1.5"/>
+      <polygon points="140,65 330,42 330,152 140,130" fill="#134e4a" stroke="#14b8a6" stroke-width="1.5"/>
+      <polygon points="330,42 420,65 420,130 330,152" fill="#0d2a27" stroke="#14b8a6" stroke-width="1.5"/>
+      <text x="235" y="95" text-anchor="middle" font-family="Syne" font-size="15" font-weight="700" fill="#2dd4bf">venturi</text>
+      <text x="235" y="113" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#0d9488">↓ pressure</text>
+      <ellipse cx="35" cy="97" rx="14" ry="30" fill="#0c2030" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="35" y="142" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#60a5fa">air in</text>
+      <rect x="418" y="70" width="30" height="55" rx="4" fill="#1c1c1c" stroke="#71717a" stroke-width="1.5"/>
+      <text x="470" y="90" font-family="JetBrains Mono" font-size="9" fill="#a1a1aa">Throttle</text>
+      <text x="470" y="102" font-family="JetBrains Mono" font-size="9" fill="#a1a1aa">plate</text>
+      <rect x="120" y="165" width="195" height="105" rx="8" fill="#0c1f1e" stroke="#0d9488" stroke-width="1.8"/>
+      <text x="217" y="185" text-anchor="middle" font-family="Syne" font-size="12" font-weight="700" fill="#2dd4bf">Float Chamber</text>
+      <path d="M140,230 Q180,215 220,235 Q260,250 295,228" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+      <ellipse cx="195" cy="245" rx="22" ry="14" fill="#0f766e" stroke="#0d9488" stroke-width="1.5"/>
+      <text x="195" y="249" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#ccfbf1">float</text>
+      <line x1="215" y1="195" x2="215" y2="165" stroke="#0d9488" stroke-width="2" stroke-dasharray="3,2" marker-end="url(#arr5)"/>
+      <text x="222" y="158" font-family="JetBrains Mono" font-size="9" fill="#0d9488">fuel rises</text>
+      <rect x="340" y="170" width="80" height="95" rx="8" fill="#0c1f1e" stroke="#0d9488" stroke-width="1.2"/>
+      <text x="380" y="195" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#5eead4">Mixture</text>
+      <text x="380" y="207" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#5eead4">Needle</text>
+      <rect x="355" y="218" width="50" height="6" rx="3" fill="#0d9488"/>
+      <rect x="50" y="165" width="60" height="28" rx="6" fill="#0d2a27" stroke="#0d9488" stroke-width="1.2"/>
+      <text x="80" y="183" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#5eead4">acc. pump</text>
+      <line x1="80" y1="165" x2="80" y2="130" stroke="#0d9488" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#arr5)"/>
+      <rect x="10" y="50" width="75" height="24" rx="5" fill="#1c0a0a" stroke="#f97316" stroke-width="1.2"/>
+      <text x="47" y="66" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#fb923c">carb heat</text>
+      <line x1="55" y1="74" x2="60" y2="80" stroke="#f97316" stroke-width="1.2" stroke-dasharray="3,2"/>
+      <text x="250" y="294" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#0f766e">venturi ↓P → fuel drawn up → throttle controls airflow</text>
+      <text x="250" y="310" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#1f2937">carb heat routes hot cowling air to prevent ice</text>
+    </svg>`,
+    questions:[
+      {q:'The venturi works by doing what to air pressure?',a:'Dropping pressure to draw fuel up',opts:['Increasing pressure','Dropping pressure to draw fuel up','Heating the fuel mixture','Filtering contaminants']},
+      {q:'What maintains the fuel level in the float chamber?',a:'The float',opts:['The throttle plate','The mixture needle','The float','The accelerator pump']},
+      {q:'Carb heat draws air from where?',a:'Hot cowling air',opts:['Outside ram air filtered','Hot cowling air','Engine exhaust directly','Cabin heat duct']},
+      {q:'The throttle plate primarily controls ___?',a:'Airflow volume (and thus power)',opts:['Fuel flow directly','Mixture ratio','Airflow volume (and thus power)','Ignition timing']},
+      {q:'The accelerator pump prevents what problem?',a:'Engine stumble on sudden throttle advance',opts:['Vapor lock','Carb icing','Engine stumble on sudden throttle advance','Lean mixture at altitude']},
+      {q:'Carburetor ice can form even when OAT is as warm as ___?',a:'~70°F (21°C) in humid conditions',opts:['Below freezing only','~70°F (21°C) in humid conditions','Above 90°F only','Only on the ground']},
+    ]
+  },
+  {
+    id:'electrical', name:'Electrical', color:'#f59e0b', dotColor:'#f59e0b',
+    facts:[
+      ['Battery','12 volts'],
+      ['Alternator','14 volts · 60 amps · driven by belt'],
+      ['Voltage regulator','Keeps alternator output at ~14V regardless of RPM'],
+      ['Ammeter','Shows charge (+) or discharge (−) rate'],
+      ['Battery master','Switch connects battery → Primary bus'],
+      ['Avionics master','Switch connects Primary bus → Avionics bus'],
+      ['Primary bus','G500, G750, Engine Monitor, Backup Display, Lights, Pitot Heat, Electric Starter, Stall Horn'],
+      ['Avionics bus','Comm 1, Comm 2, Audio Panel, Transponder, USB Port, G750'],
+    ],
+    tags:['12V battery','14V/60A alt','primary bus','avionics bus'],
+    diagram:`<svg viewBox="0 0 500 330" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="arr6" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="rgba(245,158,11,0.7)"/></marker></defs>
+      <text x="250" y="26" text-anchor="middle" font-family="Syne" font-size="18" font-weight="700" fill="#fbbf24">Electrical System</text>
+      <rect x="15" y="45" width="110" height="65" rx="8" fill="#1c1207" stroke="#d97706" stroke-width="1.8"/>
+      <text x="70" y="66" text-anchor="middle" font-family="Syne" font-size="12" font-weight="700" fill="#fbbf24">Alternator</text>
+      <text x="70" y="82" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#f59e0b">14V / 60A</text>
+      <text x="70" y="98" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#92400e">belt-driven</text>
+      <rect x="375" y="45" width="110" height="65" rx="8" fill="#1c1207" stroke="#f59e0b" stroke-width="1.8"/>
+      <text x="430" y="66" text-anchor="middle" font-family="Syne" font-size="12" font-weight="700" fill="#fbbf24">Battery</text>
+      <text x="430" y="82" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#f59e0b">12 Volts</text>
+      <rect x="195" y="50" width="110" height="50" rx="8" fill="#1a1200" stroke="#d97706" stroke-width="1.5"/>
+      <text x="250" y="72" text-anchor="middle" font-family="Syne" font-size="12" font-weight="600" fill="#fbbf24">Voltage</text>
+      <text x="250" y="88" text-anchor="middle" font-family="Syne" font-size="12" font-weight="600" fill="#fbbf24">Regulator</text>
+      <line x1="125" y1="77" x2="195" y2="75" stroke="#d97706" stroke-width="1.8" marker-end="url(#arr6)"/>
+      <line x1="305" y1="75" x2="360" y2="75" stroke="#d97706" stroke-width="1.8"/>
+      <line x1="360" y1="75" x2="375" y2="77" stroke="#d97706" stroke-width="1.5"/>
+      <text x="342" y="68" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#92400e">ammeter</text>
+      <line x1="430" y1="110" x2="430" y2="140" stroke="#f59e0b" stroke-width="2" marker-end="url(#arr6)"/>
+      <text x="390" y="132" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#92400e">Bat. master</text>
+      <rect x="355" y="145" width="130" height="50" rx="8" fill="#1c1207" stroke="#f59e0b" stroke-width="2"/>
+      <text x="420" y="165" text-anchor="middle" font-family="Syne" font-size="14" font-weight="800" fill="#fbbf24">Primary Bus</text>
+      <text x="420" y="183" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#92400e">battery → all items below</text>
+      <line x1="420" y1="195" x2="420" y2="220" stroke="#f59e0b" stroke-width="2" marker-end="url(#arr6)"/>
+      <text x="390" y="215" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#92400e">Avionics master</text>
+      <rect x="355" y="225" width="130" height="50" rx="8" fill="#1c1207" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="420" y="245" text-anchor="middle" font-family="Syne" font-size="13" font-weight="800" fill="#fbbf24">Avionics Bus</text>
+      <text x="420" y="263" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#92400e">protected avionics</text>
+      <rect x="15" y="140" width="160" height="135" rx="8" fill="#111107" stroke="#44403c" stroke-width="1"/>
+      <text x="95" y="158" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#78716c">PRIMARY BUS ITEMS</text>
+      <text x="95" y="174" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#57534e">G500 · G750</text>
+      <text x="95" y="190" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#57534e">Engine Monitor</text>
+      <text x="95" y="206" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#57534e">Backup Display · Lights</text>
+      <text x="95" y="222" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#57534e">Pitot Heat</text>
+      <text x="95" y="238" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#57534e">Electric Starter</text>
+      <text x="95" y="254" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#57534e">Stall Horn</text>
+      <rect x="15" y="286" width="160" height="35" rx="8" fill="#111107" stroke="#44403c" stroke-width="1"/>
+      <text x="95" y="300" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#78716c">AVIONICS BUS ITEMS</text>
+      <text x="95" y="314" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#57534e">Comm 1 · 2 · Transponder · G750 · USB</text>
+      <line x1="175" y1="165" x2="355" y2="165" stroke="#44403c" stroke-width="1" stroke-dasharray="3,2"/>
+      <line x1="175" y1="300" x2="355" y2="250" stroke="#44403c" stroke-width="1" stroke-dasharray="3,2"/>
+    </svg>`,
+    questions:[
+      {q:'What voltage does the battery provide?',a:'12 volts',opts:['9 volts','12 volts','14 volts','28 volts']},
+      {q:'What voltage does the alternator output?',a:'14 volts',opts:['12 volts','14 volts','24 volts','28 volts']},
+      {q:'The alternator is driven by a ___?',a:'Belt',opts:['Gear','Belt','Chain','Direct drive shaft']},
+      {q:'Which item is on the PRIMARY bus?',a:'Pitot Heat',opts:['Comm 1','Transponder','Pitot Heat','Audio Panel']},
+      {q:'Which item is on the AVIONICS bus?',a:'Transponder',opts:['Electric Starter','Pitot Heat','Stall Horn','Transponder']},
+      {q:'The voltage regulator maintains output at approximately ___?',a:'14 volts regardless of RPM',opts:['12 volts regardless of RPM','14 volts regardless of RPM','Varies with RPM','60 amps constant']},
+      {q:'The ammeter shows ___?',a:'Charge (+) or discharge (−) rate',opts:['Battery voltage','Charge (+) or discharge (−) rate','Alternator belt tension','Bus load in watts']},
+    ]
   }
+];
 
-  function openLightbox(index) {
-    visibleCards = getVisible();
-    currentIndex = index;
-    showSlide(currentIndex);
-    lightbox.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    lbClose.focus();
+let currentSystem = 0;
+let mode = 'study'; // 'study' | 'quiz'
+let qIndex = 0;
+let score = 0;
+let total = 0;
+let answered = false;
+const letters = ['A','B','C','D'];
+
+function buildNav() {
+  const nav = document.getElementById('mainNav');
+  nav.innerHTML = systems.map((s,i)=>`
+    <button class="nav-btn${i===currentSystem?' active':''}" onclick="switchSystem(${i})">
+      <span class="nav-dot" style="background:${s.dotColor}"></span>${s.name}
+    </button>`).join('');
+}
+
+function switchSystem(i) {
+  currentSystem = i; mode='study'; qIndex=0; score=0; total=0; answered=false;
+  buildNav(); renderAll();
+}
+
+function renderAll() {
+  const s = systems[currentSystem];
+  document.getElementById('mainContent').innerHTML = `
+    <div class="panel active" data-system="${s.id}">
+      <div class="panel-header">
+        <div class="panel-title">
+          <small style="color:${s.color}">//&nbsp;${s.id.toUpperCase()}</small>
+          ${s.name}
+        </div>
+        <div class="mode-toggle">
+          <button class="mode-btn${mode==='study'?' active':''}" onclick="setMode('study')">Study</button>
+          <button class="mode-btn${mode==='quiz'?' active':''}" onclick="setMode('quiz')">Quiz</button>
+        </div>
+      </div>
+      <div id="studyContent" style="display:${mode==='study'?'block':'none'}">
+        <div class="content-grid">
+          <div class="diagram-card">${s.diagram}</div>
+          <div class="card card-full">
+            <div class="card-title">Key Facts</div>
+            ${s.facts.map(([k,v])=>`<div class="fact-row"><span class="fact-key">${k}</span><span class="fact-val">${v}</span></div>`).join('')}
+            <div class="tags" style="margin-top:16px">
+              ${s.tags.map(t=>`<span class="tag" style="color:${s.color};border-color:${s.color}33;background:${s.color}11">${t}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="quizContent" style="display:${mode==='quiz'?'block':'none'}">
+        <div id="quizInner"></div>
+      </div>
+    </div>`;
+  if (mode==='quiz') renderQuiz();
+}
+
+function setMode(m) {
+  mode = m; qIndex=0; score=0; total=0; answered=false;
+  document.querySelectorAll('.mode-btn').forEach((b,i)=>b.classList.toggle('active',i===(m==='study'?0:1)));
+  document.getElementById('studyContent').style.display = m==='study'?'block':'none';
+  document.getElementById('quizContent').style.display = m==='quiz'?'block':'none';
+  if (m==='quiz') renderQuiz();
+}
+
+function renderQuiz() {
+  const s = systems[currentSystem];
+  const q = s.questions[qIndex];
+  const pct = (qIndex/s.questions.length)*100;
+  const shuffled = [...q.opts].sort(()=>Math.random()-0.5);
+  document.getElementById('quizInner').innerHTML = `
+    <div class="q-header">
+      <span class="q-counter">${qIndex+1} / ${s.questions.length} questions</span>
+      <span class="q-counter" style="color:${s.color}">${score} correct</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${s.color}"></div></div>
+    <div class="q-text">${q.q}</div>
+    <div class="options">
+      ${shuffled.map((o,i)=>`<button class="opt" data-opt="${o}" data-letter="${letters[i]}" onclick="answer(this,'${o.replace(/'/g,"\\'")}','${q.a.replace(/'/g,"\\'")}')">${o}</button>`).join('')}
+    </div>
+    <div class="feedback" id="fb"></div>
+    <button class="next-btn" id="nxt" onclick="nextQ()" style="display:none">Next question →</button>`;
+  document.querySelectorAll('.opt').forEach((b,i)=>b.setAttribute('data-letter',letters[i]));
+}
+
+function answer(btn, chosen, correct) {
+  if (answered) return;
+  answered = true; total++;
+  document.querySelectorAll('.opt').forEach(b=>{
+    b.disabled = true;
+    if (b.getAttribute('data-opt')===correct) b.classList.add('correct');
+  });
+  const fb = document.getElementById('fb');
+  if (chosen===correct) {
+    score++;
+    btn.classList.add('correct');
+    fb.textContent = '✓ Correct!';
+    fb.style.color = 'var(--green)';
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = `✗ Correct: ${correct}`;
+    fb.style.color = 'var(--red)';
   }
+  document.getElementById('nxt').style.display='inline-block';
+}
 
-  function showSlide(i) {
-    const card = visibleCards[i];
-    const img  = card.querySelector('img');
-    lbImg.src  = img.src;
-    lbImg.alt  = img.alt;
-    lbCap.textContent = card.dataset.caption || '';
-    lbCount.textContent = `${i + 1} / ${visibleCards.length}`;
+function nextQ() {
+  const s = systems[currentSystem];
+  if (qIndex < s.questions.length-1) {
+    qIndex++; answered=false; renderQuiz();
+  } else {
+    showScore();
   }
+}
 
-  function closeLightbox() {
-    lightbox.classList.remove('open');
-    document.body.style.overflow = '';
-    lbImg.src = '';
-  }
+function showScore() {
+  const s = systems[currentSystem];
+  const pct = Math.round((score/s.questions.length)*100);
+  const circumference = 2*Math.PI*44;
+  const offset = circumference*(1-pct/100);
+  const msg = pct===100?'Perfect score! Ready for the test.' : pct>=70?'Good work — review any misses.' : 'Keep drilling — you\'ve got this!';
+  document.getElementById('quizInner').innerHTML = `
+    <div class="score-screen">
+      <div class="ring-wrap">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle class="ring-track" cx="60" cy="60" r="44"/>
+          <circle class="ring-fill" cx="60" cy="60" r="44"
+            stroke="${s.color}"
+            stroke-dasharray="${circumference}"
+            stroke-dashoffset="${offset}"
+            style="transition:stroke-dashoffset 1s ease"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column">
+          <span style="font-size:28px;font-weight:800;color:${s.color}">${pct}%</span>
+        </div>
+      </div>
+      <div class="score-num" style="color:${s.color}">${score}/${s.questions.length}</div>
+      <div class="score-label">questions correct</div>
+      <div class="score-msg">${msg}</div>
+      <div class="score-actions">
+        <button onclick="qIndex=0;score=0;total=0;answered=false;renderQuiz()">Retry quiz</button>
+        <button onclick="setMode('study')">Review diagram</button>
+        <button class="primary" onclick="nextSystem()" style="background:${s.color};border-color:${s.color}">Next system →</button>
+      </div>
+    </div>`;
+}
 
-  cards.forEach((card, i) => {
-    card.addEventListener('click', () => {
-      visibleCards = getVisible();
-      const idx = visibleCards.indexOf(card);
-      if (idx >= 0) openLightbox(idx);
-    });
-  });
+function nextSystem() {
+  switchSystem((currentSystem+1)%systems.length);
+}
 
-  lbClose.addEventListener('click', closeLightbox);
-
-  lbPrev.addEventListener('click', () => {
-    currentIndex = (currentIndex - 1 + visibleCards.length) % visibleCards.length;
-    showSlide(currentIndex);
-  });
-
-  lbNext.addEventListener('click', () => {
-    currentIndex = (currentIndex + 1) % visibleCards.length;
-    showSlide(currentIndex);
-  });
-
-  lightbox.addEventListener('click', e => {
-    if (e.target === lightbox) closeLightbox();
-  });
-
-  document.addEventListener('keydown', e => {
-    if (!lightbox.classList.contains('open')) return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') lbPrev.click();
-    if (e.key === 'ArrowRight') lbNext.click();
-  });
-
-  /* ── Block right-click in lightbox specifically ── */
-  lightbox.addEventListener('contextmenu', e => e.preventDefault());
-
-  /* ── Swipe support for mobile ── */
-  let touchStartX = 0;
-  lightbox.addEventListener('touchstart', e => {
-    touchStartX = e.changedTouches[0].clientX;
-  }, { passive: true });
-  lightbox.addEventListener('touchend', e => {
-    if (!lightbox.classList.contains('open')) return;
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 50) {
-      if (dx < 0) lbNext.click();
-      else lbPrev.click();
-    }
-  });
-})();
+buildNav();
+renderAll();
 </script>
 </body>
 </html>
